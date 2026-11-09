@@ -22,6 +22,7 @@ This project demonstrates production-ready infrastructure provisioning, containe
 - [Verification & Access](#-verification--access)
 - [Key DevOps Competencies Demonstrated](#-key-devops-competencies-demonstrated)
 - [Clean-Up & Teardown](#-clean-up--teardown)
+- [Acknowledgements](#-acknowledgements)
 
 ---
 
@@ -245,3 +246,12 @@ docker compose down -v
 kubectl delete -f kubernetes/complete-deploy.yaml
 eksctl delete cluster --name devops-microservices-cluster --region us-east-1
 ```
+
+---
+
+## 🙏 Acknowledgements
+
+This project was implemented and deployed under the guidance of **Abhishek Veeramalla's DevOps Course / Project Series**. Special thanks and attribution to the following reference projects and communities:
+
+- **[Abhishek Veeramalla's Ultimate DevOps Project](https://github.com/iam-veeramalla/ultimate-devops-project-aws.git)** – For the practical AWS deployment blueprints, CI/CD pipeline guidance, and DevOps workflows.
+- **[OpenTelemetry Astronomy Shop Demo](https://opentelemetry.io/ecosystem/demo/)** – For the open-source polyglot microservices application architecture provided by the CNCF and OpenTelemetry community.

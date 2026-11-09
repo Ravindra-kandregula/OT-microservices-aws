@@ -4,12 +4,10 @@
 [![Kubernetes](https://img.shields.io/badge/Kubernetes-1.28%2B-326CE5?logo=kubernetes&logoColor=white)](https://kubernetes.io/)
 [![Docker](https://img.shields.io/badge/Docker-Containerization-2496ED?logo=docker&logoColor=white)](https://www.docker.com/)
 [![CI/CD](https://img.shields.io/badge/CI%2FCD-GitHub%20Actions-2088FF?logo=github-actions&logoColor=white)](https://github.com/features/actions)
-[![Observability](https://img.shields.io/badge/Observability-OpenTelemetry%20%7C%20Prometheus%20%7C%20Grafana-F46800?logo=opentelemetry&logoColor=white)](https://opentelemetry.io/)
-[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
 
-An end-to-end, enterprise-scale DevOps implementation deploying a polyglot, distributed microservices application (*Astronomy Shop*) across **AWS EC2** and **AWS EKS (Elastic Kubernetes Service)**. 
+An end-to-end, enterprise-scale DevOps implementation deploying a polyglot, distributed microservices application (*Astronomy Shop*) across **AWS EC2** and **AWS EKS (Elastic Kubernetes Service)**.
 
-This project demonstrates production-ready infrastructure provisioning, containerization, Kubernetes orchestration, automated CI/CD pipelines with GitHub Actions, and end-to-end observability using OpenTelemetry, Prometheus, Grafana, and Jaeger.
+This project demonstrates production-ready infrastructure provisioning, containerization with Docker & Docker Compose, Kubernetes orchestration on AWS EKS, and automated CI/CD pipelines with GitHub Actions.
 
 ---
 
@@ -20,7 +18,7 @@ This project demonstrates production-ready infrastructure provisioning, containe
 - [Deployment 1: AWS EC2 (Docker Compose)](#-deployment-1-aws-ec2-docker-compose)
 - [Deployment 2: AWS EKS (Kubernetes Cluster)](#-deployment-2-aws-eks-kubernetes-cluster)
 - [CI/CD Automation Pipeline](#-cicd-automation-pipeline)
-- [Observability & Monitoring](#-observability--monitoring)
+- [Proof of Execution / Screenshots](#-proof-of-execution--screenshots)
 - [Verification & Access](#-verification--access)
 - [Key DevOps Competencies Demonstrated](#-key-devops-competencies-demonstrated)
 - [Clean-Up & Teardown](#-clean-up--teardown)
@@ -29,69 +27,17 @@ This project demonstrates production-ready infrastructure provisioning, containe
 
 ## 🏗 Project Architecture
 
-```mermaid
-flowchart TD
-    subgraph Users ["External Traffic"]
-        Client["Web Client / Browser"]
-        LoadGen["Locust Traffic Generator"]
-    end
+The overall system architecture and microservices interaction flow:
 
-    subgraph AWS ["AWS Cloud Platform"]
-        ALB["AWS Application Load Balancer / Ingress"]
-        
-        subgraph Compute ["Compute Layer: EC2 or EKS Worker Nodes"]
-            Proxy["Frontend Proxy (Envoy / Port 8080)"]
-            Frontend["Frontend (Next.js / Node.js)"]
-            
-            subgraph Services ["Polyglot Microservices Mesh"]
-                Catalog["Product Catalog (Go)"]
-                Cart["Cart Service (C# / .NET)"]
-                Checkout["Checkout Service (Go)"]
-                Payment["Payment Service (Node.js)"]
-                Shipping["Shipping Service (Rust)"]
-                Currency["Currency Service (C++)"]
-                Email["Email Service (Ruby)"]
-                Ad["Ad Service (Java)"]
-                Quote["Quote Service (PHP)"]
-                Recommend["Recommendation Service (Python)"]
-                Fraud["Fraud Detection (Kotlin)"]
-                Accounting["Accounting Service (Go)"]
-            end
-            
-            subgraph Data ["Data & Streaming"]
-                Redis["Valkey / Redis (Cache)"]
-                Kafka["Apache Kafka (Message Broker)"]
-                Postgres["PostgreSQL (Database)"]
-            end
-            
-            subgraph Observability ["Observability Stack"]
-                OtelCol["OpenTelemetry Collector"]
-                Prom["Prometheus (Metrics)"]
-                Grafana["Grafana (Dashboards)"]
-                Jaeger["Jaeger (Distributed Traces)"]
-                OpenSearch["OpenSearch (Logs)"]
-            end
-        end
-    end
-
-    Client --> ALB
-    LoadGen --> ALB
-    ALB --> Proxy
-    Proxy --> Frontend
-    Frontend --> Services
-    Services --> Data
-    Services -. Traces / Metrics .-> OtelCol
-    OtelCol --> Prom
-    OtelCol --> Jaeger
-    OtelCol --> OpenSearch
-    Prom --> Grafana
-```
+<p align="center">
+  <img src="screenshots/OpemTelemetry_ARCH.png" alt="Architecture Diagram" width="950">
+</p>
 
 ---
 
 ## 📦 Microservices Ecosystem
 
-The demo application consists of 14+ loosely coupled polyglot microservices communicating via **gRPC** and **REST APIs**, backed by messaging and in-memory caches:
+The application consists of 14+ loosely coupled polyglot microservices communicating via **gRPC** and **REST APIs**, backed by messaging and in-memory caches:
 
 | Microservice | Language / Framework | Description |
 | :--- | :--- | :--- |
@@ -114,14 +60,12 @@ The demo application consists of 14+ loosely coupled polyglot microservices comm
 
 ## 🚀 Deployment 1: AWS EC2 (Docker Compose)
 
-For development and staging environments, the entire stack was deployed on an **AWS EC2 Ubuntu (t3.xlarge or larger recommended)** instance using Docker Compose:
+For standalone and staging environments, the entire stack was deployed on an **AWS EC2 Ubuntu (t3.xlarge or larger recommended)** instance using Docker Compose:
 
 ### 1. Provision EC2 & Configure Security Groups
 - **Inbound Rules:**
   - Port `22` (SSH): Restrict to your administrator IP
   - Port `8080` (Frontend Web UI & Proxy): HTTP access
-  - Port `8084` (Grafana Dashboards): Metrics monitoring
-  - Port `16686` (Jaeger UI): Distributed tracing
 
 ### 2. Host Configuration & Docker Setup
 ```bash
@@ -138,8 +82,8 @@ docker compose version
 ### 3. Deploy the Stack
 ```bash
 # Clone the repository
-git clone <YOUR_REPOSITORY_URL>
-cd ultimate-devops-project-demo
+git clone https://github.com/Ravindra-kandregula/OT-microservices-aws.git
+cd OT-microservices-aws
 
 # Launch services in detached mode
 docker compose up -d
@@ -152,7 +96,7 @@ docker compose ps
 
 ## ☸️ Deployment 2: AWS EKS (Kubernetes Cluster)
 
-For high availability, scalability, and automated healing, the microservices were deployed to a managed **AWS EKS** cluster.
+For high availability, scalability, and automated self-healing, the microservices were deployed to a managed **AWS EKS** cluster.
 
 ### 1. EKS Cluster Creation
 Cluster provisioned using `eksctl` or AWS Console:
@@ -235,14 +179,27 @@ sequenceDiagram
 
 ---
 
-## 📊 Observability & Monitoring
+## 📸 Proof of Execution / Screenshots
 
-Telemetry and metrics are generated across every microservice and processed in real time:
+Below are the deployment and execution verification screenshots:
 
-- **Distributed Tracing (Jaeger):** Traces full user transactions across distributed gRPC and HTTP hops, capturing span durations and identifying network latency bottlenecks.
-- **Metric Collection (Prometheus):** Scrapes RED (Rate, Errors, Duration) metrics, CPU/memory resource utilization, and queue lengths.
-- **Visual Analytics (Grafana):** Pre-configured dashboards provide visual health summaries across all microservices.
-- **Feature Flagging (flagd):** Dynamic feature rollouts without redeploying code.
+### 1. AWS EC2 Deployment (Docker Compose)
+Running containers and active microservices deployed with Docker Compose:
+
+<p align="center">
+  <img src="screenshots/OpenTelemetry_with_docker_compose.png" alt="Docker Compose Deployment" width="900">
+</p>
+
+<p align="center">
+  <img src="screenshots/OpenTelemetry_with_docker_compose1.png" alt="Docker Compose Services Status" width="900">
+</p>
+
+### 2. AWS EKS Deployment (Kubernetes Pods & Services)
+All microservices pods running and healthy on the AWS EKS cluster:
+
+<p align="center">
+  <img src="screenshots/OpenTelemetry_with_k8s_1.png" alt="Kubernetes Pods on EKS" width="900">
+</p>
 
 ---
 
@@ -251,8 +208,6 @@ Telemetry and metrics are generated across every microservice and processed in r
 | Component | Default Port | Access Method |
 | :--- | :--- | :--- |
 | **Astronomy Shop Frontend** | `8080` | `http://<EC2-PUBLIC-IP>:8080` or `http://<ALB-DNS-NAME>:8080` |
-| **Grafana Dashboards** | `8084` | `http://<EC2-PUBLIC-IP>:8084` (Default: `admin` / `admin`) |
-| **Jaeger Tracing UI** | `16686` | `http://<EC2-PUBLIC-IP>:16686` |
 | **Locust Traffic Generator** | `8089` | `http://<EC2-PUBLIC-IP>:8089` |
 
 ### Pod Health Verification
@@ -274,7 +229,6 @@ kubectl logs -l app.kubernetes.io/component=productcatalogservice -f
 - **Multi-Environment Cloud Architecture:** Practical implementation of cloud infrastructure on AWS utilizing EC2 and managed EKS.
 - **Microservices Orchestration:** Managing multi-container polyglot topologies, ClusterIP services, ConfigMaps, and volume persistence in Kubernetes.
 - **CI/CD & GitOps:** Automated testing, containerization, Docker registry publishing, and declarative manifest tracking.
-- **Cloud-Native Observability:** Implementing OpenTelemetry SDKs, collector pipelines, Prometheus metric scraping, and Grafana visualization.
 - **Networking & Security:** Security group ingress control, Kubernetes RBAC ServiceAccounts, and reverse proxying with Envoy.
 
 ---
